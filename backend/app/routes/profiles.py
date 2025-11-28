@@ -35,10 +35,10 @@ def create_or_update_profile(profile: ProfileIn, request: Request, db: Session =
         url=str(profile.url) if profile.url else None,
         note=profile.note,
         photo_url=str(profile.photoUrl) if profile.photoUrl else None,
-        phones=[p.dict() for p in profile.phones],
-        emails=[e.dict() for e in profile.emails],
-        address=profile.address.dict() if profile.address else {},
-        social=profile.social.dict() if profile.social else {},
+        phones=[p.model_dump() for p in profile.phones],
+        emails=[e.model_dump() for e in profile.emails],
+        address=profile.address.model_dump(mode='json') if profile.address else {},
+        social=profile.social.model_dump(mode='json') if profile.social else {},
     )
     db.add(m)
     db.commit()
