@@ -27,8 +27,9 @@ jobs:
           DATABASE_URL: sqlite:///./ci.db
           UPLOAD_DIR: ci_media
           PUBLIC_HOST: http://localhost:3001
+          PYTHONPATH: .
         run: |
-          pytest -q tests
+          python -m pytest -q tests
 
   deploy:
     needs: test
