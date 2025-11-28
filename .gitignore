@@ -1,0 +1,32 @@
+# OS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.coverage
+
+# Envs / Secrets
+*.env
+*.env.local
+backend/.env
+
+# Virtual envs
+backend/.venv/
+
+# Local data
+*.db
+backend/media/
+backend/test_media/
+ci_media/
+
+# PID files
+.pids/
+
+# Node (if any future UI)
+node_modules/
+
+# Docker
+*.log
+

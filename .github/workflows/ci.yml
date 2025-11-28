@@ -1,0 +1,27 @@
+name: CI
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install deps
+        run: |
+          pip install -r backend/requirements.txt
+      - name: Run tests
+        env:
+          ENV: development
+          DATABASE_URL: sqlite:///./ci.db
+          UPLOAD_DIR: ci_media
+          PUBLIC_HOST: http://localhost:3001
+        run: |
+          pytest -q backend/tests
+
