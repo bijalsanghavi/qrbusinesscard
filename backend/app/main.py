@@ -24,18 +24,19 @@ app = FastAPI(title="QR Business Card API", version="0.1.0")
 # Allow multiple frontend origins for development and production
 allowed_origins = [FRONTEND_ORIGIN]
 
-# Add localhost variants for development
+# Always allow Google AI Studio and localhost for development
+allowed_origins.extend([
+    "https://aistudio.google.com",  # Google AI Studio
+    "http://localhost:3000",
+    "http://localhost:3001",
+    "http://localhost:5173",  # Vite default
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:5173",
+])
+
+# Add localhost variant if needed
 if "localhost" in FRONTEND_ORIGIN:
     allowed_origins.append(FRONTEND_ORIGIN.replace("localhost", "127.0.0.1"))
-else:
-    # Production - also allow localhost for testing
-    allowed_origins.extend([
-        "http://localhost:3000",
-        "http://localhost:3001",
-        "http://localhost:5173",  # Vite default
-        "http://127.0.0.1:3000",
-        "http://127.0.0.1:5173",
-    ])
 
 app.add_middleware(
     CORSMiddleware,
