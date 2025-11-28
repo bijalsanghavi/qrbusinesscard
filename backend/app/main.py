@@ -41,11 +41,20 @@ app.add_middleware(SessionMiddleware, secret_key=SESSION_SECRET, same_site="lax"
 def healthz():
     return {"ok": True}
 
-# Simple table creation on startup (development only)
+# Table creation on startup
 @app.on_event("startup")
 def on_startup():
     if ENABLE_CREATE_ALL:
         Base.metadata.create_all(bind=engine)
+    # One-time table creation for production if tables don't exist
+    elif IS_PROD:
+        try:
+            from sqlalchemy import inspect
+            inspector = inspect(engine)
+            if not inspector.get_table_names():
+                Base.metadata.create_all(bind=engine)
+        except Exception:
+            pass  # Tables might already exist
 
 app.include_router(vcf_router)
 app.include_router(profiles_router, prefix="/api")
