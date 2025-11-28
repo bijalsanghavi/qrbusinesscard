@@ -20,6 +20,10 @@ def setup_module(module):
     if media.exists():
         shutil.rmtree(media)
 
+    # Create database tables
+    from app.db import Base, engine
+    Base.metadata.create_all(bind=engine)
+
 
 def test_end_to_end_flow():
     client = TestClient(app)
