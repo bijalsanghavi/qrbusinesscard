@@ -16,6 +16,7 @@ from .config import (
     ENABLE_LOCAL_MEDIA,
     FRONTEND_ORIGIN,
     SESSION_SECRET,
+    IS_PROD,
 )
 
 app = FastAPI(title="QR Business Card API", version="0.1.0")
