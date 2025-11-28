@@ -21,13 +21,14 @@ jobs:
         run: |
           pip install -r backend/requirements.txt
       - name: Run tests
+        working-directory: ./backend
         env:
           ENV: development
           DATABASE_URL: sqlite:///./ci.db
           UPLOAD_DIR: ci_media
           PUBLIC_HOST: http://localhost:3001
         run: |
-          pytest -q backend/tests
+          pytest -q tests
 
   deploy:
     needs: test
