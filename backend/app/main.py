@@ -21,15 +21,25 @@ from .config import (
 
 app = FastAPI(title="QR Business Card API", version="0.1.0")
 
-frontend_origin = FRONTEND_ORIGIN
-alternate_origin = (
-    FRONTEND_ORIGIN.replace("localhost", "127.0.0.1")
-    if "localhost" in FRONTEND_ORIGIN
-    else FRONTEND_ORIGIN
-)
+# Allow multiple frontend origins for development and production
+allowed_origins = [FRONTEND_ORIGIN]
+
+# Add localhost variants for development
+if "localhost" in FRONTEND_ORIGIN:
+    allowed_origins.append(FRONTEND_ORIGIN.replace("localhost", "127.0.0.1"))
+else:
+    # Production - also allow localhost for testing
+    allowed_origins.extend([
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "http://localhost:5173",  # Vite default
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:5173",
+    ])
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[frontend_origin, alternate_origin],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
