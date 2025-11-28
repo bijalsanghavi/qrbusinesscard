@@ -4,36 +4,17 @@ This backend deploys cleanly to Railway or AWS. Choose the path that matches you
 
 ## Recommended: Railway (fastest)
 
-What you get
-- Simple PaaS, builds from your repo (Dockerfile).
-- Managed Postgres add-on.
-- Free tier suitable for MVPs.
+**See [RAILWAY_SETUP.md](./RAILWAY_SETUP.md) for complete step-by-step instructions.**
 
-Caveat: Local file uploads
-- Railway file system is ephemeral unless you enable Volumes. For reliability, use object storage (AWS S3) by setting `S3_*` env vars — the backend will switch to presigned uploads automatically.
+Quick summary:
+1. Create Railway project, add Postgres database
+2. Set environment variables (ENV, DATABASE_URL, PUBLIC_HOST, GOOGLE_CLIENT_ID/SECRET, OAUTH_SECRET_KEY)
+3. Deploy (auto via GitHub Actions or manual via Railway CLI)
+4. Initialize database: `railway run python -m app.cli create-db`
+5. Configure Google OAuth redirect URI
+6. (Optional) Set up S3/R2 for persistent image storage
 
-Steps
-1) Create a Railway project; connect your GitHub repo.
-2) Add a Postgres plugin; copy its connection string to `DATABASE_URL` env.
-3) Add Environment Variables in Railway:
-   - `ENV=prod`
-   - `DATABASE_URL=postgresql+psycopg://...` (from plugin)
-   - `PUBLIC_HOST=https://<your-railway-domain>`
-   - `FRONTEND_ORIGIN=https://<your-ui-domain>`
-   - `OAUTH_SECRET_KEY=<random>`
-   - `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`
-   - Optional S3:
-     - `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`
-     - `IMAGE_PUBLIC_BASE=https://<your-public-image-host>`
-4) First-time DB init (one-off):
-   - Railway → Shell → `python -m app.cli create-db`
-5) Deploy via GitHub integration (push to main) or Railway CLI/action.
-
-GitHub Actions (optional)
-- Add repo secrets:
-  - `RAILWAY_TOKEN` (Railway account token)
-  - `RAILWAY_PROJECT_ID`, `RAILWAY_SERVICE_ID`, `RAILWAY_ENV_ID` (from Railway UI)
-- Trigger the workflow manually under Actions → “Deploy to Railway”.
+The repo includes GitHub Actions workflow for automatic deployment on push to `main`.
 
 ## AWS (more control)
 
@@ -72,8 +53,18 @@ jobs:
       - run: pytest -q backend/tests
 ```
 
-### Railway deploy (optional)
-Use Railway’s GitHub app (UI) or action `railwayapp/railway-action` with a project token; configure in repo secrets.
+### Railway deploy (auto on push)
+This repo includes `.github/workflows/railway-deploy.yml` which:
+- Runs backend tests, then
+- Deploys to Railway automatically on pushes to `main` (paths: backend/, docs/, scripts/, workflows).
+
+Configure repo secrets in GitHub → Settings → Secrets and variables → Actions:
+- `RAILWAY_TOKEN` – Railway account token
+- `RAILWAY_PROJECT_ID` – Your project ID (e.g., `5053b920-4513-465d-aa9f-a92723317975`)
+- `RAILWAY_SERVICE_ID` – The backend service ID (from Railway UI)
+- `RAILWAY_ENV_ID` – The environment ID (e.g., production)
+
+Once secrets are set, every push to `main` triggers tests and deploy.
 
 ## Runtime env variables
 - `ENV=prod` (production) or `development` (local)
