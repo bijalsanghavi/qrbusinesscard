@@ -57,6 +57,16 @@ app.add_middleware(SessionMiddleware, secret_key=SESSION_SECRET, same_site="lax"
 def healthz():
     return {"ok": True}
 
+@app.get("/admin/init-db")
+def init_db():
+    """Temporary endpoint to manually trigger table creation and see errors"""
+    try:
+        Base.metadata.create_all(bind=engine)
+        return {"success": True, "message": "Tables created successfully"}
+    except Exception as e:
+        import traceback
+        return {"success": False, "error": str(e), "traceback": traceback.format_exc()}
+
 # Table creation on startup
 @app.on_event("startup")
 def on_startup():
