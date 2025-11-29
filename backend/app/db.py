@@ -10,7 +10,20 @@ if not DATABASE_URL:
 if DATABASE_URL.startswith("postgresql://"):
     DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+psycopg://", 1)
 
-engine = create_engine(DATABASE_URL, pool_pre_ping=True)
+# Add connection parameters for Railway Postgres stability
+engine_args = {
+    "pool_pre_ping": True,
+    "pool_size": 5,
+    "max_overflow": 10,
+    "pool_recycle": 300,  # Recycle connections after 5 minutes
+    "pool_timeout": 30,
+    "connect_args": {
+        "connect_timeout": 10,
+        "options": "-c statement_timeout=30000"  # 30 second timeout
+    }
+}
+
+engine = create_engine(DATABASE_URL, **engine_args)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
