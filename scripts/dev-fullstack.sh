@@ -69,7 +69,7 @@ fi
 
 # Start backend with run.sh
 echo "Starting FastAPI on http://localhost:3001"
-./scripts/run.sh > /tmp/qr-backend.log 2>&1 &
+./run.sh > /tmp/qr-backend.log 2>&1 &
 BACKEND_PID=$!
 
 # Wait for backend to be ready
