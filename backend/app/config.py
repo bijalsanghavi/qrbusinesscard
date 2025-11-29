@@ -7,7 +7,7 @@ IS_PROD = ENV in ("prod", "production")
 
 # Feature flags derived from ENV
 ENABLE_DEV_ROUTES = IS_DEV
-ENABLE_CREATE_ALL = IS_DEV  # only create tables automatically in development
+ENABLE_CREATE_ALL = os.getenv("ENABLE_CREATE_ALL", "false").lower() in ("true", "1", "yes") or IS_DEV
 ENABLE_LOCAL_MEDIA = True   # allow serving /media in both, can be overridden later
 
 # CORS origins
