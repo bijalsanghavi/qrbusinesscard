@@ -31,7 +31,7 @@ QR Business Card is a backend-only FastAPI service that generates QR codes linki
 ### Production
 - **Backend**: Railway - https://qrbusinesscard-production-qrcode.up.railway.app
   - ✅ Manual deployment works (`railway up`)
-  - ❌ GitHub Actions auto-deploy needs valid Railway token
+  - ✅ GitHub Actions auto-deploy working (uses Account Token via `RAILWAY_API_TOKEN`)
   - Environment: `production-qrcode`
   - Service ID: `efd4178b-20e2-4387-a062-09079d8fa5a0`
   - Project ID: `5053b920-4513-465d-aa9f-a92723317975`
@@ -345,18 +345,17 @@ ENABLE_DEV_ROUTES=false  # Disable dev routes in prod
 
 ## Outstanding Issues
 
-### 1. GitHub Actions Railway Deployment ❌
-**Status**: Manual deployment works, GitHub Actions fails with "Unauthorized"
-**Cause**: Invalid or incorrectly formatted RAILWAY_TOKEN
-**Next Steps**:
-1. Go to https://railway.app/account/tokens
-2. Create new token (click "Create New Token")
-3. **Immediately copy the token value shown** (only shown once!)
-4. Update GitHub secret: `gh secret set RAILWAY_TOKEN`
-5. Test: Manually trigger workflow or push to `backend/` directory
+### 1. GitHub Actions Railway Deployment ✅ RESOLVED
+**Status**: Working! Auto-deploys on push to `main`
+**Solution**: Used Railway Account Token via `RAILWAY_API_TOKEN` (not `RAILWAY_TOKEN`)
+**Key Learnings**:
+- Account Tokens created at https://railway.app/account/tokens support `railway link` command
+- Project Tokens only support `railway up`, `railway redeploy`, `railway logs`
+- Account Tokens use `RAILWAY_API_TOKEN` environment variable
+- Workflow now: link project → deploy with `railway up --detach`
 
 **Workflow**: `.github/workflows/railway-deploy.yml`
-**Secrets**: `RAILWAY_TOKEN` (needs update), `RAILWAY_SERVICE_ID` (correct)
+**Secrets**: `RAILWAY_API_TOKEN` ✅ configured
 
 ### 2. Frontend Netlify Deployment ⏳
 **Status**: Not started
