@@ -116,7 +116,11 @@ async def auth_callback(request: Request, db: Session = Depends(get_db)):
         # Use config module instead of os.getenv to get correct value
         return RedirectResponse(url=FRONTEND_ORIGIN)
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        # Log detailed error for debugging
+        import traceback
+        print(f"[auth/callback] ERROR: {type(e).__name__}: {str(e)}")
+        print(f"[auth/callback] Traceback:\n{traceback.format_exc()}")
+        raise HTTPException(status_code=400, detail=f"{type(e).__name__}: {str(e)}")
 
 
 @router.get("/me")
