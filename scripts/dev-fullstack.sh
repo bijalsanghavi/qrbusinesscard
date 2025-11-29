@@ -143,15 +143,22 @@ echo ""
 
 # Step 4: Start frontend
 echo -e "${BLUE}[4/5]${NC} Starting frontend..."
-echo "Starting Vite dev server on http://localhost:5173"
+echo "Starting Vite dev server..."
 npm run dev > /tmp/qr-frontend.log 2>&1 &
 FRONTEND_PID=$!
 
-# Wait for frontend to be ready
+# Wait for frontend to be ready (check common ports)
 echo "Waiting for frontend to start..."
+FRONTEND_PORT=""
 for i in {1..30}; do
+    # Check port 5173 (Vite default)
     if curl -s http://localhost:5173 > /dev/null 2>&1; then
-        echo -e "${GREEN}✅ Frontend ready at http://localhost:5173${NC}"
+        FRONTEND_PORT="5173"
+        break
+    fi
+    # Check port 3000 (common alternative)
+    if curl -s http://localhost:3000 > /dev/null 2>&1; then
+        FRONTEND_PORT="3000"
         break
     fi
     if [ $i -eq 30 ]; then
@@ -161,6 +168,10 @@ for i in {1..30}; do
     fi
     sleep 1
 done
+
+if [ ! -z "$FRONTEND_PORT" ]; then
+    echo -e "${GREEN}✅ Frontend ready at http://localhost:$FRONTEND_PORT${NC}"
+fi
 echo ""
 
 # Step 5: Open in browser
@@ -168,15 +179,16 @@ echo -e "${BLUE}[5/5]${NC} Opening browser..."
 sleep 2
 
 # Detect OS and open browser
+FRONTEND_URL="http://localhost:${FRONTEND_PORT:-5173}"
 if [[ "$OSTYPE" == "darwin"* ]]; then
     # macOS
-    open http://localhost:5173
+    open "$FRONTEND_URL"
 elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
     # Linux
-    xdg-open http://localhost:5173
+    xdg-open "$FRONTEND_URL"
 elif [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]]; then
     # Windows
-    start http://localhost:5173
+    start "$FRONTEND_URL"
 fi
 
 echo ""
@@ -184,7 +196,7 @@ echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━
 echo -e "${GREEN}   🚀 Full Stack Development Environment Ready!      ${NC}"
 echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
-echo -e "  ${BLUE}Frontend:${NC} http://localhost:5173"
+echo -e "  ${BLUE}Frontend:${NC} http://localhost:${FRONTEND_PORT:-5173}"
 echo -e "  ${BLUE}Backend:${NC}  http://localhost:3001"
 echo -e "  ${BLUE}API Docs:${NC} http://localhost:3001/docs"
 echo ""
