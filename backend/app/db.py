@@ -11,26 +11,13 @@ if DATABASE_URL.startswith("postgresql://"):
     DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+psycopg://", 1)
 
 # Add connection parameters for database stability
-# Different databases support different connection parameters
 engine_args = {
     "pool_pre_ping": True,
-    "pool_size": 5,
-    "max_overflow": 10,
-    "pool_recycle": 300,  # Recycle connections after 5 minutes
-    "pool_timeout": 30,
 }
 
-# Add PostgreSQL-specific connection parameters
-if DATABASE_URL.startswith("postgresql"):
-    engine_args["connect_args"] = {
-        "connect_timeout": 10,
-        "options": "-c statement_timeout=30000"  # 30 second timeout
-    }
-elif DATABASE_URL.startswith("sqlite"):
-    # SQLite supports check_same_thread parameter
-    engine_args["connect_args"] = {
-        "check_same_thread": False
-    }
+# Add database-specific parameters
+if DATABASE_URL.startswith("sqlite"):
+    engine_args["connect_args"] = {"check_same_thread": False}
 
 engine = create_engine(DATABASE_URL, **engine_args)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
