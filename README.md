@@ -50,3 +50,4 @@ Notes: Configure Google OAuth in `backend/.env` for `/auth/login` to work.
   - Add a basic workflow to SSH into the server and run the same `make` targets after pushing to `main`.
   - Or push images to a registry (GHCR/Docker Hub) and `docker compose pull && make prod-up` on the server.
 
+
