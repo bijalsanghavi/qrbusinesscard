@@ -43,8 +43,9 @@ def build_public_url(key: str) -> str:
     base = os.getenv("IMAGE_PUBLIC_BASE")
     if base:
         return f"{base.rstrip('/')}/{key}"
-    # Fallback to local media route
-    return f"/media/{key}"
+    # Fallback to local media route with absolute URL
+    public_host = os.getenv("PUBLIC_HOST", "http://localhost:3001")
+    return f"{public_host.rstrip('/')}/media/{key}"
 
 
 def create_presigned_put(key: str, content_type: str, expires_in: int = 900, cache_control: str | None = None) -> str:

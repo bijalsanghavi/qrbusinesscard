@@ -11,7 +11,10 @@ ENABLE_CREATE_ALL = IS_DEV  # only create tables automatically in development
 ENABLE_LOCAL_MEDIA = True   # allow serving /media in both, can be overridden later
 
 # CORS origins
-FRONTEND_ORIGIN = os.getenv("FRONTEND_ORIGIN", "http://localhost:3000")
+# TEMPORARY: Hardcoded to fix .env loading issue
+FRONTEND_ORIGIN = os.getenv("FRONTEND_ORIGIN") or "http://localhost:3000"
+if FRONTEND_ORIGIN == "http://localhost:3002":  # Override incorrect cached value
+    FRONTEND_ORIGIN = "http://localhost:3000"
 
 # Session secret
 SESSION_SECRET = os.getenv("OAUTH_SECRET_KEY", "dev-secret-change-me")

@@ -113,8 +113,8 @@ async def auth_callback(request: Request, db: Session = Depends(get_db)):
         request.session['user_id'] = user.id
         request.session['email'] = user.email
         # redirect back to frontend
-        frontend = os.getenv('FRONTEND_ORIGIN', 'http://localhost:3000')
-        return RedirectResponse(url=frontend)
+        # Use config module instead of os.getenv to get correct value
+        return RedirectResponse(url=FRONTEND_ORIGIN)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, HttpUrl, constr
+from pydantic import BaseModel, HttpUrl, constr, field_validator
 from typing import List, Optional, Literal
 
 PhoneType = Literal["cell", "work", "home"]
@@ -25,6 +25,13 @@ class Social(BaseModel):
     twitter: Optional[HttpUrl] = None
     facebook: Optional[HttpUrl] = None
 
+    @field_validator('linkedin', 'instagram', 'twitter', 'facebook', mode='before')
+    @classmethod
+    def empty_str_to_none(cls, v):
+        if v == '' or v is None:
+            return None
+        return v
+
 class ProfileIn(BaseModel):
     fullName: str
     firstName: Optional[str] = None
@@ -38,6 +45,13 @@ class ProfileIn(BaseModel):
     address: Address = Address()
     note: Optional[str] = None
     photoUrl: Optional[HttpUrl] = None
+
+    @field_validator('url', 'photoUrl', mode='before')
+    @classmethod
+    def empty_str_to_none(cls, v):
+        if v == '' or v is None:
+            return None
+        return v
 
 class ProfileOut(ProfileIn):
     id: str
