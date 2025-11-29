@@ -21,18 +21,22 @@ from .config import (
 
 app = FastAPI(title="QR Business Card API", version="0.1.0")
 
-# Allow multiple frontend origins for development and production
+# CORS Configuration
+# IMPORTANT: Update FRONTEND_ORIGIN in Railway env vars after deploying to Netlify
+# Example: FRONTEND_ORIGIN=https://qrbusinesscard.netlify.app
 allowed_origins = [FRONTEND_ORIGIN]
 
-# Always allow Google AI Studio and localhost for development
+# Local development origins
 allowed_origins.extend([
-    "https://aistudio.google.com",  # Google AI Studio
     "http://localhost:3000",
     "http://localhost:3001",
     "http://localhost:5173",  # Vite default
     "http://127.0.0.1:3000",
     "http://127.0.0.1:5173",
 ])
+
+# Google AI Studio (for testing with Gemini-built frontend)
+allowed_origins.append("https://aistudio.google.com")
 
 # Add localhost variant if needed
 if "localhost" in FRONTEND_ORIGIN:
